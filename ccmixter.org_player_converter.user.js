@@ -3,7 +3,7 @@
 // @namespace   https://github.com/s-light/
 // @description convertes the file player to raw html5 player so no flash is required.
 // @include     http://ccmixter.org/*
-// @version     0.1
+// @version     0.2
 // @grant       none
 // ==/UserScript==
 
@@ -15,8 +15,60 @@
 //     }
 // }
 
+
+
+function fadeOut(player) {
+    // console.log("this", this);
+    // console.log("player", player);
+
+    var stepSize = player.getAttribute('stepSize');
+
+    // if fade out is finished pause player
+    if (player.volume <= 0) {
+        player.pause();
+        // reset volum to original
+        player.volume = player.getAttribute('volumeOriginal');
+        console.log("player '" +  player.src +"' paused");
+    } else {
+        // fadeout
+        if ( (player.volume - stepSize) > 0 ) {
+            player.volume = player.volume - stepSize;
+        } else {
+            player.volume = 0;
+        }
+        window.setTimeout(fadeOut, player.getAttribute('fadeStepTime'), player);
+    }
+
+}
+
+function startFadeOut(player) {
+    // console.log("this", this);
+    // console.log("player", player);
+
+    // backup original volume setting
+    player.setAttribute('volumeOriginal', player.volume);
+
+    // target fadeTime
+    var fadeTime = 1000; // ms
+    // target stepSize for smothe fading (range 0..1)
+    var stepSize = 0.01;
+
+    // calculate fadeStepTime
+    var steps = player.volume / stepSize;
+    var fadeStepTime = fadeTime / steps
+
+    player.setAttribute('fadeStepTime', fadeStepTime);
+    player.setAttribute('stepSize', stepSize);
+
+
+    // player.pause();
+    console.log("fadeOut started.");
+    window.setTimeout(fadeOut, player.getAttribute('fadeStepTime'), player);
+}
+
 function handlePlay(event) {
-    console.log("play event", event);
+    // console.log("play event", event);
+
     // this event idea does not work...
     // var myEvent = new Event('pleaseStop');
     // document.dispatchEvent(myEvent);
@@ -29,9 +81,10 @@ function handlePlay(event) {
         // console.log("audios[" + i + "]:", audios[i]);
         // if current auido is playing than paus it
         if(audios[i] != event.target){
-            if ( !audios[i].paused()) {
-                audios[i].pause();
-                console.log("audios" + i + " paused");
+            if ( !audios[i].paused) {
+                startFadeOut(audios[i]);
+                // audios[i].pause();
+                // console.log("audios" + i + " paused");
             }
         }
     }
@@ -41,7 +94,8 @@ function addAudioPlayer(parent_element, file_name) {
     var el_audio = document.createElement("audio");
     el_audio.controls = true;
     el_audio.src = file_name;
-    // does not work?!
+
+    // this does not work..
     // el_audio.addEventListener('pleaseStop', handlePleaseStop, false);
     // el_audio.addEventListener('play', handlePlay, false)
 
