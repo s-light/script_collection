@@ -51,7 +51,7 @@ def SendDMXFrame():
     global pixel_count
     global strobe_state
 
-    for index_pixel in range(1, pixel_count):
+    for index_pixel in range(1, pixel_count+1):
         if strobe_state:
             # universe 1
             data.append(0)
@@ -89,15 +89,22 @@ if __name__ == '__main__':
     if not arg:
         print( "using standard values.")
         print(" Allowed parameters:")
-        print("   TICK_INTERVAL in ms    (defualt=10)")
-        print("   pixel_count            (defualt=25)")
+        print("   TICK_INTERVAL in ms       (defualt=10)")
+        print("   pixel_count               (defualt=25)")
+        print("   universe                  (defualt=5)")
         print("")
     else:
-        TICK_INTERVAL = int(arg[0])
+        TICK_INTERVAL = float(arg[0])
         if len(arg) > 1:
             pixel_count = int(arg[1])
+        if len(arg) > 2:
+            universe = int(arg[2])
     #print parsed argument values
-    print('values:\n TICK_INTERVAL :{:>6}\n pixel_count   :{:>6}\n'.format(TICK_INTERVAL, pixel_count))
+    print('''values:
+        TICK_INTERVAL :{:>6}
+        pixel_count   :{:>6}
+        universe      :{:>6}
+    '''.format(TICK_INTERVAL, pixel_count, universe))
 
     # setup system
     print("get wrapper")
