@@ -3,7 +3,7 @@
 // @namespace   https://github.com/s-light/
 // @description convertes the file player to raw html5 player so no flash is required.
 // @include     http://ccmixter.org/*
-// @version     0.2
+// @version     0.3
 // @grant       none
 // ==/UserScript==
 
@@ -25,10 +25,10 @@ function fadeOut(player) {
 
     // if fade out is finished pause player
     if (player.volume <= 0) {
-        player.pause();
-        // reset volum to original
-        player.volume = player.getAttribute('volumeOriginal');
-        console.log("player '" +  player.src +"' paused");
+      console.log("fadeOut finished.");
+      player.pause();
+      console.log("player '" +  player.src +"' paused");
+      window.setTimeout(resetVolume, 1, player);
     } else {
         // fadeout
         if ( (player.volume - stepSize) > 0 ) {
@@ -39,6 +39,12 @@ function fadeOut(player) {
         window.setTimeout(fadeOut, player.getAttribute('fadeStepTime'), player);
     }
 
+}
+
+function resetVolume(player) {
+  // reset volum to original
+  player.volume = player.getAttribute('volumeOriginal');
+  console.log("reset volume");
 }
 
 function startFadeOut(player) {
@@ -149,5 +155,10 @@ function convertAllPlayers(){
 }
 
 
-// call main function
-convertAllPlayers();
+function main() {
+  // call main function
+  console.log("ccmixter.org_player_converter script v0.3")
+  convertAllPlayers();
+}
+
+main();
